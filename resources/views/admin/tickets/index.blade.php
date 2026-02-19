@@ -50,7 +50,6 @@
                         <td class="border px-2 py-1">{{ $t->nama_pelapor }}</td>
                         <td class="border px-2 py-1">{{ $t->kontak_pelapor }}</td>
                         <td class="border px-2 py-1">{{ $t->deskripsi }}</td>
-                        <div class="text-xs text-gray-600">{{ Str::limit($t->deskripsi, 80) }}</div>
                         <td class="border px-2 py-1">
                             {{ $t->unit ? $t->unit->unit_kerja . ' (' . $t->unit->lokasi . ')' : '-' }}
                         </td>

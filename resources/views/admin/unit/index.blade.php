@@ -106,13 +106,19 @@
                             <td class="p-2 border">{{ $u->unit_kerja }}</td>
                             <td class="p-2 border">{{ $u->lokasi ?? '-' }}</td>
                             <td class="p-2 border text-center">
-                                <button type="button" class="text-blue-600 hover:underline"
-                                    onclick="document.getElementById('modal-{{ $u->id_unit }}').classList.remove('hidden')">Edit</button>
-                                <form action="{{ route('unit.destroy', $u->id_unit) }}" method="POST" class="inline"
+                                <!-- <button type="button" class="text-blue-600 hover:underline"
+                                    onclick="document.getElementById('modal-{{ $u->id_unit }}').classList.remove('hidden')">Edit</button> -->
+                                <button type="button"
+                                    class="ml-2"
+                                    onclick="document.getElementById('modal-{{ $u->id_unit }}').classList.remove('hidden')">
+                                    <img src="https://www.svgrepo.com/show/313874/edit-solid.svg"
+                                        class="w-5 h-5 text-blue-600" alt="Edit Icon">
+                                </button>
+                                <!-- <form action="{{ route('unit.destroy', $u->id_unit) }}" method="POST" class="inline"
                                     onsubmit="return confirm('Hapus unit ini?')">
                                     @csrf @method('DELETE')
                                     <button class="text-red-600 hover:underline ml-2">Hapus</button>
-                                </form>
+                                </form> -->
                             </td>
                         </tr>
 
