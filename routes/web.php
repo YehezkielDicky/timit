@@ -9,6 +9,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserLogController;
+use App\Http\Controllers\KategoriController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
@@ -52,6 +53,17 @@ Route::middleware(['role:admin,staff,koordinator'])->group(function () {
     Route::get('/barang/{id}/transaksi-json', [BarangController::class, 'transactionsJson'])
         ->name('barang.transactions.json');
     Route::get('/barang/{id}/peminjaman-json', [BarangController::class, 'peminjamanJson']);
+    Route::put('/barang/{id}/restore', [BarangController::class, 'restore'])->name('barang.restore');
+    Route::post('/barang/ajax-delete', [BarangController::class, 'ajaxDelete']);
+    Route::post('/barang/ajax-restore', [BarangController::class, 'ajaxRestore']);
+
+    //Kategori
+    Route::post('/kategori/store-ajax', [KategoriController::class, 'storeAjax'])
+    ->name('kategori.store.ajax');
+    Route::get('/kategori/list-ajax', [App\Http\Controllers\KategoriController::class, 'listAjax'])
+        ->name('kategori.list.ajax');
+    Route::put('/kategori/update-ajax/{id}', [App\Http\Controllers\KategoriController::class, 'updateAjax']);
+    Route::delete('/kategori/delete-ajax/{id}', [App\Http\Controllers\KategoriController::class, 'deleteAjax']);
 
     //unit
     Route::resource('unit', UnitController::class)->except(['show', 'create', 'edit']);

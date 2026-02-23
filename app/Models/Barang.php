@@ -12,9 +12,9 @@ class Barang extends Model
 
     protected $fillable = [
         'nama_barang',
-        'satuan',
-        'qty', // stok saat ini
-        'stok_awal'
+        'id_kategori',
+        'qty',
+        'status_barang',
     ];
 
     // Relasi ke detail transaksi
@@ -35,5 +35,9 @@ class Barang extends Model
             ->sum('qty');
 
         return ($this->stok_awal ?? 0) + $masuk - $keluar;
+    }
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class, 'id_kategori');
     }
 }
