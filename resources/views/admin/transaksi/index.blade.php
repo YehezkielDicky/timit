@@ -260,53 +260,53 @@
                                             </div>
 
                                             {{-- ✅ Upload Dokumen (Gabungan TT & BA) --}}
-<div class="mb-3">
-    <label class="form-label">Upload Dokumen (Tanda Terima & Berita Acara)</label>
+                                            <div class="mb-3">
+                                                <label class="form-label">Upload Dokumen (Tanda Terima & Berita Acara)</label>
 
-    {{-- Status file lama --}}
-    <div class="text-sm mb-2 space-y-1">
+                                                {{-- Status file lama --}}
+                                                <div class="text-sm mb-2 space-y-1">
 
-        @if ($t->tanda_terima)
-            <p class="text-green-600">
-                ✔ Tanda Terima sudah diunggah —
-                <a href="{{ asset('storage/' . $t->tanda_terima) }}"
-                   target="_blank"
-                   class="underline text-blue-600">
-                    Lihat
-                </a>
-            </p>
-        @endif
+                                                    @if ($t->tanda_terima)
+                                                        <p class="text-green-600">
+                                                            ✔ Tanda Terima sudah diunggah —
+                                                            <a href="{{ asset('storage/' . $t->tanda_terima) }}"
+                                                            target="_blank"
+                                                            class="underline text-blue-600">
+                                                                Lihat
+                                                            </a>
+                                                        </p>
+                                                    @endif
 
-        @if ($t->berita_acara)
-            <p class="text-green-600">
-                ✔ Berita Acara sudah diunggah —
-                <a href="{{ asset('storage/' . $t->berita_acara) }}"
-                   target="_blank"
-                   class="underline text-blue-600">
-                    Lihat
-                </a>
-            </p>
-        @endif
+                                                    @if ($t->berita_acara)
+                                                        <p class="text-green-600">
+                                                            ✔ Berita Acara sudah diunggah —
+                                                            <a href="{{ asset('storage/' . $t->berita_acara) }}"
+                                                            target="_blank"
+                                                            class="underline text-blue-600">
+                                                                Lihat
+                                                            </a>
+                                                        </p>
+                                                    @endif
 
-        @if (!$t->tanda_terima && !$t->berita_acara)
-            <p class="text-gray-500">Belum ada dokumen yang diunggah.</p>
-        @endif
+                                                    @if (!$t->tanda_terima && !$t->berita_acara)
+                                                        <p class="text-gray-500">Belum ada dokumen yang diunggah.</p>
+                                                    @endif
 
-    </div>
+                                                </div>
 
-    {{-- Input multi file baru --}}
-    <input type="file"
-           name="dokumen[]"
-           accept=".pdf,.doc,.docx"
-           class="form-input"
-           multiple>
+                                                {{-- Input multi file baru --}}
+                                                <input type="file"
+                                                    name="dokumen[]"
+                                                    accept=".pdf,.doc,.docx"
+                                                    class="form-input"
+                                                    multiple>
 
-    <p class="text-xs text-gray-600 mt-1">
-        Upload MAX 2 file:
-        <b>TT</b> = Tanda Terima — <b>BA</b> = Berita Acara.
-        <br>Penamaan file contoh: <b>TT.pdf</b> & <b>BA.pdf</b>
-    </p>
-</div>
+                                                <p class="text-xs text-gray-600 mt-1">
+                                                    Upload MAX 2 file:
+                                                    <b>TT</b> = Tanda Terima — <b>BA</b> = Berita Acara.
+                                                    <br>Penamaan file contoh: <b>TT.pdf</b> & <b>BA.pdf</b>
+                                                </p>
+                                            </div>
 
                                         </div>
 
