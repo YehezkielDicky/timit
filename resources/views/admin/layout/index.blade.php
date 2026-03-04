@@ -72,10 +72,14 @@
                     <span>Master Unit</span>
                 </a>
 
+                {{-- HANYA ADMIN & KOORDINATOR --}}
+                @if (in_array($role, ['admin','koordinator']))
                 <a href="{{ route('peminjaman.index') }}"
-                class="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10">
+                class="flex items-center gap-2 px-3 py-2 rounded
+                {{ request()->routeIs('peminjaman.*') ? 'bg-white/15' : 'hover:bg-white/10' }}">
                     <span>Peminjaman Barang</span>
                 </a>
+                @endif
             @endif
 
             @if (in_array(session('auth_user.role'), ['admin', 'koordinator']))

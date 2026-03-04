@@ -59,7 +59,7 @@
             </select>
         </div>
 
-        {{-- Upload File BA & TT --}}
+        {{-- Upload File --}}
         <div class="mb-3">
             <label class="block text-sm font-medium mb-1">
                 Upload Dokumen (Tanda Terima & Berita Acara)
@@ -84,16 +84,19 @@
 
         <div id="item-container">
             <div class="item-row mb-2 flex gap-2 items-center">
-                <select name="items[0][id_barang]" class="border rounded w-full p-2" required>
+
+                <select name="items[0][id_barang]" class="border rounded w-full p-2 barang-select" required>
                     <option value="">-- Pilih Barang --</option>
                     @foreach ($barang as $b)
-                    <option value="{{ $b->id_barang }}">{{ $b->nama_barang }}</option>
+                    <option value="{{ $b->id_barang }}" data-stok="{{ $b->qty }}">
+                        {{ $b->nama_barang }} (Stok: {{ $b->qty }})
+                    </option>
                     @endforeach
                 </select>
 
                 <input type="number"
                     name="items[0][qty]"
-                    class="border rounded w-32 p-2"
+                    class="border rounded w-32 p-2 qty-input"
                     placeholder="Qty"
                     min="1"
                     required>
@@ -123,23 +126,29 @@
     </form>
 </div>
 
-{{-- ================= JAVASCRIPT ================= --}}
+
 <script>
+
     const container = document.getElementById('item-container');
     const addItemBtn = document.getElementById('addItem');
 
     addItemBtn.addEventListener('click', () => {
+
         const firstRow = container.querySelector('.item-row');
         const clone = firstRow.cloneNode(true);
 
         clone.querySelectorAll('select, input').forEach(el => el.value = '');
+
         container.appendChild(clone);
 
         reindexItems();
+
     });
 
     container.addEventListener('click', function(e) {
+
         if (e.target.classList.contains('remove-item')) {
+
             const rows = container.querySelectorAll('.item-row');
 
             if (rows.length === 1) {
@@ -150,15 +159,23 @@
             e.target.closest('.item-row').remove();
             reindexItems();
         }
+
     });
 
     function reindexItems() {
+
         const rows = container.querySelectorAll('.item-row');
+
         rows.forEach((row, index) => {
+
             row.querySelectorAll('select, input').forEach(el => {
+
                 el.name = el.name.replace(/\[\d+]/, `[${index}]`);
+
             });
+
         });
+
     }
 
     document.querySelector('form').addEventListener('submit', () => {
@@ -166,9 +183,40 @@
     });
 
 
-    // ============================
-    // AUTO GENERATE NO SURAT
-    // ============================
+    /*
+    ==================================
+    STOK VALIDATION
+    ==================================
+    */
+
+    document.addEventListener('change', function(e){
+
+        if(e.target.classList.contains('barang-select')){
+
+            const select = e.target;
+
+            const stok = select.options[select.selectedIndex].dataset.stok;
+
+            const row = select.closest('.item-row');
+
+            const qtyInput = row.querySelector('.qty-input');
+
+            if(stok){
+
+                qtyInput.max = stok;
+
+            }
+
+        }
+
+    });
+
+
+    /*
+    ==================================
+    AUTO GENERATE NO SURAT
+    ==================================
+    */
 
     const jenisSelect  = document.getElementById('jenis');
     const tanggalInput = document.querySelector('input[name="tanggal"]');
@@ -190,12 +238,10 @@
                 noSuratInput.value = data.no_surat;
             })
             .catch(error => console.error(error));
+
     }
 
-    // trigger saat jenis berubah
     jenisSelect.addEventListener('change', generateNoSurat);
-
-    // trigger saat tanggal berubah
     tanggalInput.addEventListener('change', generateNoSurat);
 
 </script>

@@ -59,7 +59,16 @@
     <div class="bg-white p-6 rounded shadow">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-semibold">Master Barang</h2>
-            <a href="{{ route('barang.create') }}" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">+ Tambah</a>
+            <div class="flex gap-2">
+                <a href="{{ route('barang.printAll') }}"
+                    class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">
+                    Print Semua Barang
+                </a>
+                <a href="{{ route('barang.create') }}"
+                    class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">
+                    + Tambah
+                </a>
+            </div>
         </div>
 
         @if (session('success'))
@@ -503,6 +512,67 @@
             </head>
             <body>
             ${content}
+            </body>
+            </html>
+        `);
+
+        win.document.close();
+        win.print();
+    }
+
+    function printBarang(){
+
+        const rows = document.querySelectorAll("table tbody tr");
+
+        let html = `
+        <h2 style="margin-bottom:10px">Daftar Barang</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama Barang</th>
+                    <th>Kategori</th>
+                    <th>Qty</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        rows.forEach(r => {
+
+            const cols = r.querySelectorAll("td");
+
+            if(cols.length >= 4){
+
+                html += `
+                    <tr>
+                        <td>${cols[0].innerText}</td>
+                        <td>${cols[1].innerText}</td>
+                        <td>${cols[2].innerText}</td>
+                        <td>${cols[3].innerText}</td>
+                    </tr>
+                `;
+
+            }
+
+        });
+
+        html += "</tbody></table>";
+
+        const win = window.open('', '', 'width=900,height=700');
+
+        win.document.write(`
+            <html>
+            <head>
+            <title>Print Barang</title>
+            <style>
+                body{font-family:Arial;padding:20px}
+                table{width:100%;border-collapse:collapse}
+                th,td{border:1px solid #000;padding:6px;text-align:center}
+            </style>
+            </head>
+            <body>
+            ${html}
             </body>
             </html>
         `);

@@ -27,28 +27,147 @@ class BarangController extends Controller
         ]);
     }
 
+    public function printAll()
+    {
+        $aktif = Barang::with('kategori')
+            ->where('status_barang','aktif')
+            ->orderBy('nama_barang','asc')
+            ->get();
+
+        $nonaktif = Barang::with('kategori')
+            ->where('status_barang','nonaktif')
+            ->orderBy('nama_barang','asc')
+            ->get();
+
+        $html = '
+        <html>
+        <head>
+            <title>Print Daftar Barang</title>
+            <style>
+                body{font-family:Arial;padding:20px}
+                h2{text-align:center;margin-bottom:20px}
+                h3{margin-top:30px}
+                table{width:100%;border-collapse:collapse;margin-top:10px}
+                th,td{border:1px solid #000;padding:6px;text-align:center}
+                th{background:#eee}
+            </style>
+        </head>
+        <body>
+
+        <h2>Daftar Barang Inventaris</h2>
+
+        <h3>Barang Aktif</h3>
+        <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama Barang</th>
+                <th>Kategori</th>
+                <th>Qty</th>
+            </tr>
+        </thead>
+        <tbody>
+        ';
+
+        foreach($aktif as $i => $b){
+
+            $kategori = $b->kategori->nama_kategori ?? '-';
+
+            $html .= "
+            <tr>
+                <td>".($i+1)."</td>
+                <td>{$b->nama_barang}</td>
+                <td>{$kategori}</td>
+                <td>{$b->qty}</td>
+            </tr>";
+        }
+
+        $html .= '
+        </tbody>
+        </table>
+
+        <h3>Barang Nonaktif</h3>
+        <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama Barang</th>
+                <th>Kategori</th>
+                <th>Qty</th>
+            </tr>
+        </thead>
+        <tbody>
+        ';
+
+        foreach($nonaktif as $i => $b){
+
+            $kategori = $b->kategori->nama_kategori ?? '-';
+
+            $html .= "
+            <tr>
+                <td>".($i+1)."</td>
+                <td>{$b->nama_barang}</td>
+                <td>{$kategori}</td>
+                <td>{$b->qty}</td>
+            </tr>";
+        }
+
+        $html .= '
+        </tbody>
+        </table>
+
+        <script>
+            window.onload = function(){
+                window.print();
+            }
+        </script>
+
+        </body>
+        </html>
+        ';
+
+        return response($html);
+    }
+
     // LIST
     public function index(Request $request)
     {
         $q = trim($request->get('q',''));
+        $kategori = $request->get('kategori');
 
-        // Barang aktif (pagination)
-        $data = Barang::where('status_barang', 'aktif')
-            ->when($q, fn($w) => $w->where('nama_barang', 'like', "%{$q}%"))
-            ->with('kategori')
-            ->orderBy('id_barang', 'asc')
-            ->paginate(10, ['*'], 'aktif_page'); // paginate aktif
+        $data = Barang::where('status_barang','aktif')
 
-        // Barang nonaktif (pagination)
-        $nonaktif = Barang::where('status_barang', 'nonaktif')
-            ->when($q, fn($w) => $w->where('nama_barang', 'like', "%{$q}%"))
+            ->when($q, function($w) use ($q){
+                $w->where('nama_barang','like',"%{$q}%");
+            })
+
+            ->when($kategori, function($w) use ($kategori){
+                $w->where('id_kategori',$kategori);
+            })
+
             ->with('kategori')
-            ->orderBy('id_barang', 'asc')
-            ->paginate(10, ['*'], 'nonaktif_page'); // paginate nonaktif
+            ->orderBy('id_barang','asc')
+            ->paginate(10,['*'],'aktif_page');
+
+        $nonaktif = Barang::where('status_barang','nonaktif')
+
+            ->when($q, function($w) use ($q){
+                $w->where('nama_barang','like',"%{$q}%");
+            })
+
+            ->when($kategori, function($w) use ($kategori){
+                $w->where('id_kategori',$kategori);
+            })
+
+            ->with('kategori')
+            ->orderBy('id_barang','asc')
+            ->paginate(10,['*'],'nonaktif_page');
 
         $kategori = Kategori::orderBy('nama_kategori')->get();
 
-        return view('admin.barang.index', compact('data', 'nonaktif', 'q', 'kategori'));
+        return view('admin.barang.index', compact(
+            'data','nonaktif','q','kategori'
+        ));
     }
 
     public function ajaxDelete(Request $request)

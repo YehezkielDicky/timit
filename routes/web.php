@@ -58,6 +58,8 @@ Route::middleware(['role:admin,staff,koordinator'])->group(function () {
     Route::post('/barang/ajax-delete', [BarangController::class, 'ajaxDelete']);
     Route::post('/barang/ajax-restore', [BarangController::class, 'ajaxRestore']);
     Route::get('/barang/{id}/print-riwayat', [BarangController::class,'printRiwayat']);
+    Route::get('/barang/print-all', [BarangController::class, 'printAll'])
+    ->name('barang.printAll');
 
     //Kategori
     Route::post('/kategori/store-ajax', [KategoriController::class, 'storeAjax'])
@@ -69,13 +71,6 @@ Route::middleware(['role:admin,staff,koordinator'])->group(function () {
 
     //unit
     Route::resource('unit', UnitController::class)->except(['show', 'create', 'edit']);
-
-    //Peminjaman Barang
-    Route::resource('peminjaman', PeminjamanController::class)
-        ->except(['show', 'create', 'edit']);
-    // tombol kembalikan
-    Route::patch('peminjaman/{id}/kembalikan', [PeminjamanController::class, 'kembalikan'])
-        ->name('peminjaman.kembalikan');
 });
 
 // Hanya admin yang bisa kelola user
@@ -95,6 +90,13 @@ Route::middleware(['role:admin'])->group(function () {
 Route::middleware(['role:admin,koordinator'])->group(function () {
     Route::get('/admin/logs', [UserLogController::class, 'index'])
         ->name('admin.logs.index');
+    
+    //Peminjaman Barang
+    Route::resource('peminjaman', PeminjamanController::class)
+        ->except(['show', 'create', 'edit']);
+    // tombol kembalikan
+    Route::patch('peminjaman/{id}/kembalikan', [PeminjamanController::class, 'kembalikan'])
+        ->name('peminjaman.kembalikan');
 });
 
 //validasi halaman Tiket
