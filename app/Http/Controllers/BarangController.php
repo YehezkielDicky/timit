@@ -178,4 +178,28 @@ class BarangController extends Controller
             'data' => $data
         ]);
     }
+
+    public function printRiwayat($id)
+    {
+        $barang = Barang::findOrFail($id);
+
+        $transaksi = Htrans::with(['details' => function ($q) use ($id) {
+            $q->where('id_barang', $id);
+        }, 'unit'])
+        ->whereHas('details', fn($q) => $q->where('id_barang', $id))
+        ->orderBy('tanggal','asc')
+        ->get();
+
+        $peminjaman = \App\Models\Peminjaman::with('user')
+            ->where('id_barang',$id)
+            ->orderBy('tanggal','desc')
+            ->get();
+
+        return view('admin.barang.print-riwayat', compact(
+            'barang',
+            'transaksi',
+            'peminjaman'
+        ));
+    }
+    
 }

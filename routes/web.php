@@ -39,7 +39,8 @@ Route::middleware(['role:admin,staff,koordinator'])->group(function () {
     Route::get('/transaksi/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/transaksi/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
     Route::get('/transaksi/laporan/print', [LaporanController::class, 'print'])->name('laporan.print');
-
+    Route::get('/transaksi/generate-no-surat', [TransaksiController::class, 'generateNoSuratAjax'])
+    ->name('transaksi.generate');
     // ⬇⬇⬇ Tambahan: Aset (hanya store saja)
     Route::post('/aset/store', [AsetController::class, 'store'])->name('aset.store');
 
@@ -56,6 +57,7 @@ Route::middleware(['role:admin,staff,koordinator'])->group(function () {
     Route::put('/barang/{id}/restore', [BarangController::class, 'restore'])->name('barang.restore');
     Route::post('/barang/ajax-delete', [BarangController::class, 'ajaxDelete']);
     Route::post('/barang/ajax-restore', [BarangController::class, 'ajaxRestore']);
+    Route::get('/barang/{id}/print-riwayat', [BarangController::class,'printRiwayat']);
 
     //Kategori
     Route::post('/kategori/store-ajax', [KategoriController::class, 'storeAjax'])

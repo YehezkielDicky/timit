@@ -127,6 +127,44 @@ class TransaksiController extends Controller
         return $name;
     }
 
+    private function generateNoSurat($jenis)
+    {
+        $now   = now();
+        $tahun = $now->year;
+        $bulan = $now->month;
+
+        // Convert bulan ke romawi
+        $romawi = [
+            1=>'I',2=>'II',3=>'III',4=>'IV',5=>'V',6=>'VI',
+            7=>'VII',8=>'VIII',9=>'IX',10=>'X',11=>'XI',12=>'XII'
+        ];
+        $bulanRomawi = $romawi[$bulan];
+
+        // Mapping kode surat
+        $kode = match($jenis) {
+            'masuk'  => 'SM',
+            'keluar' => 'SK',
+            default  => 'SM'
+        };
+
+        // Ambil nomor terakhir bulan ini + jenis ini
+        $last = HTrans::whereYear('tanggal', $tahun)
+            ->whereMonth('tanggal', $bulan)
+            ->where('jenis', $jenis)
+            ->orderBy('id_trans', 'desc')
+            ->first();
+
+        $noUrut = 1;
+
+        if ($last) {
+            $lastNumber = (int) explode('/', $last->no_surat)[0];
+            $noUrut = $lastNumber + 1;
+        }
+
+        $noUrut = str_pad($noUrut, 2, '0', STR_PAD_LEFT);
+
+        return "{$noUrut}/WM_IT/{$kode}/{$bulanRomawi}/{$tahun}";
+    }
 
     public function store(Request $request)
     {
@@ -182,7 +220,9 @@ class TransaksiController extends Controller
             // ======================
             //  SIMPAN HEADER
             // ======================
-            $payload = $request->only(['no_surat', 'jenis', 'tanggal', 'id_unit', 'keterangan']);
+            $noSurat = $this->generateNoSurat($request->jenis);
+            $payload = $request->only(['jenis', 'tanggal', 'id_unit', 'keterangan']);
+            $payload['no_surat'] = $noSurat;
             $payload['tanda_terima'] = $ttPath;
             $payload['berita_acara'] = $baPath;
 
@@ -217,6 +257,53 @@ class TransaksiController extends Controller
         });
 
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan.');
+    }
+
+    public function generateNoSuratAjax(Request $request)
+    {
+        $jenis   = $request->jenis;
+        $tanggal = $request->tanggal;
+
+        if (!$jenis || !$tanggal) {
+            return response()->json(['no_surat' => '']);
+        }
+
+        $date  = \Carbon\Carbon::parse($tanggal);
+        $tahun = $date->year;
+        $bulan = $date->month;
+
+        // Konversi bulan ke romawi
+        $romawi = [
+            1=>'I',2=>'II',3=>'III',4=>'IV',5=>'V',6=>'VI',
+            7=>'VII',8=>'VIII',9=>'IX',10=>'X',11=>'XI',12=>'XII'
+        ];
+
+        $bulanRomawi = $romawi[$bulan];
+
+        // kode surat
+        $kode = $jenis === 'masuk' ? 'SM' : 'SK';
+
+        // ambil nomor terakhir berdasarkan bulan, tahun dan jenis
+        $last = HTrans::whereYear('tanggal', $tahun)
+            ->whereMonth('tanggal', $bulan)
+            ->where('jenis', $jenis)
+            ->orderBy('id_trans','desc')
+            ->first();
+
+        $noUrut = 1;
+
+        if ($last) {
+            $lastNumber = (int) explode('/', $last->no_surat)[0];
+            $noUrut = $lastNumber + 1;
+        }
+
+        $noUrut = str_pad($noUrut, 2, '0', STR_PAD_LEFT);
+
+        $noSurat = "{$noUrut}/WM_IT/{$kode}/{$bulanRomawi}/{$tahun}";
+
+        return response()->json([
+            'no_surat' => $noSurat
+        ]);
     }
 
     // ✅ Edit transaksi

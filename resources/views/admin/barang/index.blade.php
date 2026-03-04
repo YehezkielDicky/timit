@@ -348,7 +348,11 @@
 
         </div>
 
-        <div class="px-5 py-3 border-t flex justify-end">
+       <div class="px-5 py-3 border-t flex justify-between">
+            <button onclick="printRiwayat()"
+                class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                Print
+            </button>
             <button type="button" class="btn btn-secondary" onclick="closeRiwayat()">Tutup</button>
         </div>
 
@@ -367,6 +371,7 @@
         const title = document.getElementById('riwayat-title');
 
         title.textContent = 'Riwayat - ' + namaBarang;
+
         body.innerHTML = '';
         bodyPinjam.innerHTML = '';
         loading.classList.remove('hidden');
@@ -375,15 +380,27 @@
         modal.classList.add('flex');
 
         try {
+
             const res = await fetch("{{ url('/barang') }}/" + idBarang + "/transaksi-json");
             const json = await res.json();
+
             loading.classList.add('hidden');
 
             if (!json.data?.length) {
-                body.innerHTML = `<tr><td colspan="6" class="p-3 text-center text-gray-500">Tidak ada transaksi.</td></tr>`;
+
+                body.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-3 text-center text-gray-500">
+                            Tidak ada transaksi.
+                        </td>
+                    </tr>`;
+
             } else {
+
                 let no = 1;
+
                 json.data.forEach(t => {
+
                     body.innerHTML += `
                         <tr class="text-center">
                             <td class="border p-2">${no++}</td>
@@ -393,23 +410,42 @@
                             <td class="border p-2">${t.qty}</td>
                             <td class="border p-2">${t.unit_kerja ?? '-'}</td>
                         </tr>`;
+
                 });
+
             }
+
         } catch {
-            body.innerHTML = `<tr><td colspan="6" class="p-3 text-center text-red-500">Gagal memuat transaksi.</td></tr>`;
+
+            body.innerHTML = `
+                <tr>
+                    <td colspan="6" class="p-3 text-center text-red-500">
+                        Gagal memuat transaksi.
+                    </td>
+                </tr>`;
+
         }
 
         try {
+
             const res2 = await fetch("{{ url('/barang') }}/" + idBarang + "/peminjaman-json");
             const json2 = await res2.json();
 
             if (!json2.data?.length) {
-                bodyPinjam.innerHTML =
-                    `<tr><td colspan="6" class="p-3 text-center text-gray-500">Tidak ada peminjaman.</td></tr>`;
+
+                bodyPinjam.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-3 text-center text-gray-500">
+                            Tidak ada peminjaman.
+                        </td>
+                    </tr>`;
+
             } else {
+
                 let no = 1;
-                bodyPinjam.innerHTML = "";
+
                 json2.data.forEach(p => {
+
                     bodyPinjam.innerHTML += `
                         <tr class="text-center">
                             <td class="border p-2">${no++}</td>
@@ -419,12 +455,22 @@
                             <td class="border p-2">${p.jumlah}</td>
                             <td class="border p-2">${p.status}</td>
                         </tr>`;
+
                 });
+
             }
+
         } catch {
-            bodyPinjam.innerHTML =
-                `<tr><td colspan="6" class="p-3 text-center text-red-500">Gagal memuat peminjaman.</td></tr>`;
+
+            bodyPinjam.innerHTML = `
+                <tr>
+                    <td colspan="6" class="p-3 text-center text-red-500">
+                        Gagal memuat peminjaman.
+                    </td>
+                </tr>`;
+
         }
+
     }
 
     function closeRiwayat() {
@@ -437,5 +483,31 @@
         if (!tgl) return "-";
         const d = new Date(tgl);
         return d.toLocaleDateString("id-ID");
+    }
+
+    function printRiwayat() {
+
+        const content = document.querySelector("#modal-riwayat .p-5").innerHTML;
+
+        const win = window.open('', '', 'width=900,height=700');
+
+        win.document.write(`
+            <html>
+            <head>
+            <title>Print Riwayat</title>
+            <style>
+                body{font-family:Arial;padding:20px}
+                table{width:100%;border-collapse:collapse}
+                th,td{border:1px solid #000;padding:6px;text-align:center}
+            </style>
+            </head>
+            <body>
+            ${content}
+            </body>
+            </html>
+        `);
+
+        win.document.close();
+        win.print();
     }
 </script>

@@ -17,13 +17,18 @@
         {{-- No Surat --}}
         <div class="mb-3">
             <label class="block text-sm font-medium mb-1">No Surat</label>
-            <input type="text" name="no_surat" class="border rounded w-full p-2" required>
+            <input type="text"
+                id="no_surat"
+                name="no_surat"
+                class="border rounded w-full p-2 bg-gray-100"
+                readonly>
         </div>
 
         {{-- Jenis Transaksi --}}
         <div class="mb-3">
             <label class="block text-sm font-medium mb-1">Jenis Transaksi</label>
-            <select name="jenis" class="border rounded w-full p-2" required>
+            <select name="jenis" id="jenis" class="border rounded w-full p-2" required>
+                <option value="">-- Pilih Jenis --</option>
                 <option value="masuk">Barang Masuk</option>
                 <option value="keluar">Barang Keluar</option>
             </select>
@@ -54,20 +59,6 @@
             </select>
         </div>
 
-        <!-- {{-- Upload File --}}
-        <div class="grid md:grid-cols-2 gap-4 mb-3">
-            <div>
-                <label class="block text-sm font-medium mb-1">Upload Tanda Terima</label>
-                <input type="file" name="tanda_terima" accept=".pdf,.doc,.docx"
-                    class="border rounded w-full p-2 bg-gray-50">
-            </div>
-            <div>
-                <label class="block text-sm font-medium mb-1">Upload Berita Acara</label>
-                <input type="file" name="berita_acara" accept=".pdf,.doc,.docx"
-                    class="border rounded w-full p-2 bg-gray-50">
-            </div>
-        </div> -->
-        
         {{-- Upload File BA & TT --}}
         <div class="mb-3">
             <label class="block text-sm font-medium mb-1">
@@ -173,6 +164,40 @@
     document.querySelector('form').addEventListener('submit', () => {
         reindexItems();
     });
-    
+
+
+    // ============================
+    // AUTO GENERATE NO SURAT
+    // ============================
+
+    const jenisSelect  = document.getElementById('jenis');
+    const tanggalInput = document.querySelector('input[name="tanggal"]');
+    const noSuratInput = document.getElementById('no_surat');
+
+    function generateNoSurat(){
+
+        const jenis   = jenisSelect.value;
+        const tanggal = tanggalInput.value;
+
+        if (!jenis || !tanggal) {
+            noSuratInput.value = '';
+            return;
+        }
+
+        fetch(`{{ route('transaksi.generate') }}?jenis=${jenis}&tanggal=${tanggal}`)
+            .then(response => response.json())
+            .then(data => {
+                noSuratInput.value = data.no_surat;
+            })
+            .catch(error => console.error(error));
+    }
+
+    // trigger saat jenis berubah
+    jenisSelect.addEventListener('change', generateNoSurat);
+
+    // trigger saat tanggal berubah
+    tanggalInput.addEventListener('change', generateNoSurat);
+
 </script>
+
 @endsection
