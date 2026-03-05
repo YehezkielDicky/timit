@@ -29,28 +29,6 @@ class TransaksiController extends Controller
         ]);
     }
 
-    // ✅ List transaksi
-    // public function index(Request $request)
-    // {
-    //     $from = $request->input('from'); // yyyy-mm-dd
-    //     $to   = $request->input('to');
-    //     $no_surat = $request->input('no_surat');
-
-    //     $transaksi = HTrans::with(['details.barang', 'unit'])
-    //     ->when($from, fn($q) => $q->whereDate('tanggal', '>=', $from))
-    //     ->when($to, fn($q) => $q->whereDate('tanggal', '<=', $to))
-    //     ->when($no_surat, fn($q) => $q->where('no_surat', 'LIKE', "%$no_surat%"))
-    //     ->orderBy('tanggal', 'desc')
-    //     ->orderBy('id_trans', 'desc')
-    //     ->paginate(20);
-
-    //     $transaksi->appends($request->query());
-
-    //     $barang = Barang::orderBy('nama_barang')->get();
-    //     $units  = UnitKerja::orderBy('unit_kerja')->get();
-
-    //     return view('admin.transaksi.index', compact('transaksi', 'barang', 'units'));
-    // }
     public function index(Request $request)
     {
         $from = $request->input('from');
@@ -253,7 +231,12 @@ class TransaksiController extends Controller
             }
 
             // LOG
-            $this->writeLog($request, 'Create', 'Transaksi');
+            $this->writeLog(
+                $request,
+                'Update',
+                'Transaksi',
+                "Edit Transaksi NoSurat: {$h->no_surat}"
+            );
         });
 
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan.');
@@ -422,7 +405,12 @@ class TransaksiController extends Controller
             }
 
             // LOG
-            $this->writeLog($request, 'Update', 'Transaksi');
+            $this->writeLog(
+                $request,
+                'Update',
+                'Transaksi',
+                "Edit Transaksi NoSurat: {$h->no_surat}"
+            );
         });
 
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil diperbarui.');
@@ -453,7 +441,12 @@ class TransaksiController extends Controller
 
             $h->delete();
 
-            $this->writeLog($request, 'Delete', 'Transaksi', "Hapus NoSurat: {$noSurat}, Jenis: {$jenis}");
+            $this->writeLog(
+                $request,
+                'Update',
+                'Transaksi',
+                "Edit Transaksi NoSurat: {$h->no_surat}"
+            );
         });
 
         return back()->with('success', 'Transaksi berhasil dihapus.');

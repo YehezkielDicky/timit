@@ -85,7 +85,7 @@
         <div id="item-container">
             <div class="item-row mb-2 flex gap-2 items-center">
 
-                <select name="items[0][id_barang]" class="border rounded w-full p-2 barang-select" required>
+                <select name="items[0][id_barang]" class="border rounded w-full p-2 barang-select select-barang" required>
                     <option value="">-- Pilih Barang --</option>
                     @foreach ($barang as $b)
                     <option value="{{ $b->id_barang }}" data-stok="{{ $b->qty }}">
@@ -136,12 +136,16 @@
 
         const firstRow = container.querySelector('.item-row');
         const clone = firstRow.cloneNode(true);
+        $(clone).find('.select2').remove();
+        $(clone).find('select').removeClass('select2-hidden-accessible').show();
 
         clone.querySelectorAll('select, input').forEach(el => el.value = '');
 
         container.appendChild(clone);
 
         reindexItems();
+
+        initSelect2(); // 🔥 re-init select2
 
     });
 
@@ -243,6 +247,24 @@
 
     jenisSelect.addEventListener('change', generateNoSurat);
     tanggalInput.addEventListener('change', generateNoSurat);
+
+    function initSelect2(){
+
+        $('.select-barang').each(function(){
+
+            if (!$(this).hasClass("select2-hidden-accessible")) {
+
+                $(this).select2({
+                    placeholder: "Silahkan Pilih Barang...",
+                    width: '100%'
+                });
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+        initSelect2();
+    });
 
 </script>
 
