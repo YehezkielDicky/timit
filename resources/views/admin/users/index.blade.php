@@ -49,7 +49,7 @@
                             <td class="p-2 border">
                                 <span
                                     class="px-2 py-1 rounded text-white
-                            @if ($u->status === 'active') bg-green-600 @else bg-gray-500 @endif">
+                            @if ($u->status === 'active') bg-green-600 @else bg-red-500 @endif">
                                     {{ $u->status }}
                                 </span>
                             </td>
@@ -60,7 +60,7 @@
                                     @method('PATCH')
                                     <input type="hidden" name="status"
                                         value="{{ $u->status === 'active' ? 'inactive' : 'active' }}">
-                                    <button class="px-3 py-1 border rounded hover:bg-gray-100">
+                                    <button class="px-3 py-1 border rounded hover:bg-red-100">
                                         {{ $u->status === 'active' ? 'Nonaktifkan' : 'Aktifkan' }}
                                     </button>
                                 </form>
