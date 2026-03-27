@@ -111,7 +111,7 @@
         const topUnitLabels = @json($topUnitLabels);
         const topUnitData = @json($topUnitData);
 
-        new Chart(document.getElementById('chartMonthly'), {
+        new Chart(document.getElementById('chartMonthly'), {  
             type: 'line',
             data: {
                 labels: monthlyLabels,
